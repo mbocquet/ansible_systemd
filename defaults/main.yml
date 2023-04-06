@@ -5,3 +5,10 @@
 #   DefaultTimeoutStopSec: 10s
 #   DefaultOOMPolicy: stop
 # See systemd-system.conf(5) for details.
+
+# systemd_units : handle systemd units state
+# systemd_units:
+#   - name: sleep.target
+#     masked: true
+#   - name: suspend.target
+#     masked: false

@@ -31,6 +31,11 @@ None.
           systemd_config:
             DefaultTimeoutStopSec: 10s
             DefaultOOMPolicy: stop
+          systemd_units:
+            - name: sleep.target
+              masked: true
+            - name: suspend.target
+              masked: true
 
 ## License
 
