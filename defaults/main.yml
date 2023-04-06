@@ -1,0 +1,7 @@
+---
+# defaults file for systemd
+
+# systemd_config:
+#   DefaultTimeoutStopSec: 10s
+#   DefaultOOMPolicy: stop
+# See systemd-system.conf(5) for details.

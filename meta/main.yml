@@ -1,0 +1,23 @@
+galaxy_info:
+  author: Mathias BOCQUET
+  description: Ansible role to configure systemd
+
+  issue_tracker_url: https://git.sekoya.org/mb/systemd/issues
+
+  license: GPLv3
+
+  min_ansible_version: "2.4"
+
+  platforms:
+    - name: Debian
+      versions:
+        - buster
+        - bullseye
+        - bookworm
+        - sid
+
+  galaxy_tags:
+    - admin
+    - systemd
+
+dependencies: []
