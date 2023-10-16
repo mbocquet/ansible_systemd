@@ -16,6 +16,9 @@
 
 - name: system.conf.d/local.conf
   community.general.ini_file:
+    mode: 0664
+    owner: root
+    group: root
     no_extra_spaces: true
     path: /etc/systemd/system.conf.d/local.conf
     section: Manager
