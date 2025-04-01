@@ -16,7 +16,7 @@ None.
 
 ## Install this role as submodule in a git repository
 
-`git submodule add https://git.sekoya.org/mb/systemd.git roles/systemd`
+`git submodule add https://git.sekoya.org/mb/ansible_systemd.git roles/systemd`
 
 ## Example Playbook
 
