@@ -1,2 +1,29 @@
 ---
 # handlers file for systemd
+- name: Systemd reload
+  systemd:
+    daemon_reload: true
+
+- name: Systemd service restart
+  service:
+    name: "{{ item.name }}"
+    state: restarted
+  loop: "{{ systemd_services }}"
+
+- name: Systemd restarter service restart
+  service:
+    name: "{{ item.name }}-restart"
+    state: restarted
+  loop: "{{ systemd_services }}"
+  when:
+    - item.restarter is defined
+    - item.restarter
+
+- name: Systemd restarter path restart
+  service:
+    name: "{{ item.name }}-restart.path"
+    state: restarted
+  loop: "{{ systemd_services }}"
+  when:
+    - item.restarter is defined
+    - item.restarter
