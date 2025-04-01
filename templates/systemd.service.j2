@@ -1,0 +1,27 @@
+# {{ ansible_managed }}. role: {{ role_name }}. template: systemd.service.j2
+
+[Unit]
+Description={{ item.name }}
+
+[Service]
+ExecStart={{ item.command }}
+Restart=on-failure
+RestartSec=30
+{% if item.working_directory is defined %}
+WorkingDirectory={{ item.working_directory }}
+{% endif %}
+
+# StandardOutput= /home/myuser/myappdir/logs/myapp.out.log
+# StandardError= /home/myuser/myappdir/logs/myapp.err.log
+# SyslogIdentifier=myapp
+User={{ item.user | default('root') }}
+Group={{ item.group | default('root') }}
+
+{% if item.environment is defined %}
+{% for env in item.environment %}
+Environment={{ env }}
+{% endfor %}
+{% endif %}
+
+[Install]
+WantedBy=default.target

@@ -1,0 +1,12 @@
+# {{ ansible_managed }}. role: {{ role_name }}. template: systemd-restart.service.j2
+
+[Unit]
+Description={{ item.name }} restarter
+After={{ item.name }}.service
+
+[Service]
+Type=oneshot
+ExecStart=/bin/systemctl restart {{ item.name }}.service
+
+[Install]
+WantedBy=default.target

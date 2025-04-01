@@ -1,0 +1,183 @@
+---
+- name: WorkingDirectory
+  file:
+    path: "{{ item.working_directory }}"
+    state: directory
+    mode: 02775
+    owner: "{{ item.user | default(omit) }}"
+    group: "{{ item.group | default(omit) }}"
+  loop: "{{ systemd_services }}"
+  when:
+    - item.working_directory is defined
+    - item.available
+  tags:
+    - systemd
+    - workingdirectory
+
+- name: Systemd service template
+  ansible.builtin.template:
+    src: systemd.service.j2
+    dest: "/etc/systemd/system/{{ item.name }}.service"
+  notify:
+    - Systemd reload
+    - Systemd service restart
+  loop: "{{ systemd_services }}"
+  when:
+    item.available is undefined or
+    item.available
+  tags:
+    - systemd
+    - service
+    - template
+
+- name: Systemd service template
+  ansible.builtin.stat:
+    path: "/etc/systemd/system/{{ item.name }}.service"
+  loop: "{{ systemd_services }}"
+  when:
+    item.available is undefined or
+    item.available
+  tags:
+    - systemd
+    - service
+
+- name: Systemd service
+  ansible.builtin.systemd:
+    name: "{{ item.name }}"
+    enabled: "{{ item.enabled | default(true) }}"
+    state: "{{ item.state | default('started') }}"
+    daemon_reload: true
+  loop: "{{ systemd_services }}"
+  when:
+    - item.available is undefined or item.available
+  tags:
+    - systemd
+    - service
+
+- name: Systemd service restarter template
+  template:
+    src: systemd-restart.service.j2
+    dest: "/etc/systemd/system/{{ item.name }}-restart.service"
+  notify:
+    - Systemd reload
+    - Systemd restarter service restart
+  loop: "{{ systemd_services }}"
+  when:
+    - item.available is undefined or item.available
+    - item.restarter is defined
+    - item.restarter
+  tags:
+    - systemd
+    - service
+    - template
+    - restarter
+
+- name: Systemd restarter service
+  ansible.builtin.systemd:
+    name: "{{ item.name }}-restart"
+    enabled: "{{ item.enabled | default(true) }}"
+    state: "{{ item.state | default('started') }}"
+    daemon_reload: true
+  loop: "{{ systemd_services }}"
+  when:
+    - item.available is undefined or item.available
+    - item.restarter is defined
+    - item.restarter is true
+  tags:
+    - systemd
+    - service
+    - restarter
+
+- name: Systemd path restarter template
+  template:
+    src: systemd-restart.path.j2
+    dest: "/etc/systemd/system/{{ item.name }}-restart.path"
+  notify:
+    - Systemd reload
+    - Systemd restarter path restart
+  loop: "{{ systemd_services }}"
+  when:
+    - item.available is undefined or item.available
+    - item.restarter is defined
+    - item.restarter
+  tags:
+    - systemd
+    - service
+    - template
+    - restarter
+
+- name: Systemd path
+  ansible.builtin.systemd:
+    name: "{{ item.name }}-restart.path"
+    enabled: "{{ item.enabled | default(true) }}"
+    state: "{{ item.state | default('started') }}"
+    daemon_reload: true
+  loop: "{{ systemd_services }}"
+  when:
+    - item.available is undefined or item.available
+    - item.restarter is defined
+    - item.restarter
+  tags:
+    - systemd
+    - service
+    - restarter
+
+- name: Systemd service
+  ansible.builtin.systemd:
+    name: "{{ item.name }}"
+    enabled: "{{ item.enabled }}"
+    state: "{{ item.state }}"
+    daemon_reload: true
+  loop: "{{ systemd_services }}"
+  when:
+    - item.available is defined
+    - not item.available
+  tags:
+    - systemd
+    - service
+
+- name: Clean service file
+  file:
+    path: "/etc/systemd/system/{{ item.name }}.service"
+    state: absent
+  notify: Systemd reload
+  loop: "{{ systemd_services }}"
+  when:
+    - item.available is defined
+    - not item.available
+  tags:
+    - systemd
+    - service
+    - deletion
+
+- name: Clean restart service file
+  file:
+    dest: "/etc/systemd/system/{{ item.name }}-restart.service"
+    state: absent
+  notify: Systemd reload
+  loop: "{{ systemd_services }}"
+  when:
+    - item.available is defined
+    - not item.available
+    - item.restarter is defined
+    - item.restarter
+  tags:
+    - systemd
+    - service
+    - deletion
+
+- name: Clean restart path file
+  file:
+    dest: "/etc/systemd/system/{{ item.name }}-restart.path"
+    state: absent
+  notify: Systemd reload
+  loop: "{{ systemd_services }}"
+  when:
+    - item.available is defined
+    - not item.available
+    - item.restarter is defined
+    - item.restarter
+  tags:
+    - systemd
+    - service
+    - deletion

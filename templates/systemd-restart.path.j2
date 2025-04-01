@@ -1,0 +1,7 @@
+# {{ ansible_managed }}. role: {{ role_name }}. template: systemd-restart.path.j2
+
+[Path]
+PathModified={{ item.working_directory }}
+
+[Install]
+WantedBy=default.target
