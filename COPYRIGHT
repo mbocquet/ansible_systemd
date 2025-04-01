@@ -1,6 +1,6 @@
 'systemd'. Ansible role to configure systemd.
 
-Copyright © 2022-2024 Mathias BOCQUET (mbocquet@sekoya.org)
+Copyright © 2022-2025 Mathias BOCQUET (mbocquet@sekoya.org)
 
 This file is part of 'systemd' Ansible role.
 
