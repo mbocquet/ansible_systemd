@@ -43,3 +43,7 @@
   tags:
     - systemd
     - units
+
+- import_tasks: services.yml
+  when:
+    - systemd_services is defined
