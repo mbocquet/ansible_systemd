@@ -1,17 +1,17 @@
 ---
 # handlers file for systemd
 - name: Systemd reload
-  systemd:
+  ansible.builtin.systemd:
     daemon_reload: true
 
 - name: Systemd service restart
-  service:
+  ansible.builtin.service:
     name: "{{ item.name }}"
     state: restarted
   loop: "{{ systemd_services }}"
 
 - name: Systemd restarter service restart
-  service:
+  ansible.builtin.service:
     name: "{{ item.name }}-restart"
     state: restarted
   loop: "{{ systemd_services }}"
@@ -20,7 +20,7 @@
     - item.restarter
 
 - name: Systemd restarter path restart
-  service:
+  ansible.builtin.service:
     name: "{{ item.name }}-restart.path"
     state: restarted
   loop: "{{ systemd_services }}"

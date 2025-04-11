@@ -1,7 +1,7 @@
 ---
 # tasks file for systemd
 - name: fake ansible managed line
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: /etc/systemd/system.conf.d/local.conf
     insertbefore: BOF
     regexp: '^# Ansible managed'
@@ -33,7 +33,7 @@
     - conf.d
 
 - name: masked units
-  systemd:
+  ansible.builtin.systemd:
     name: "{{ item.name }}"
     masked: "{{ item.masked }}"
   loop: "{{ systemd_units }}"
@@ -44,6 +44,7 @@
     - systemd
     - units
 
-- import_tasks: services.yml
+- name: Services
+  ansible.builtin.import_tasks: services.yml
   when:
     - systemd_services is defined

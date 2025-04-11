@@ -1,6 +1,6 @@
 ---
 - name: WorkingDirectory
-  file:
+  ansible.builtin.file:
     path: "{{ item.working_directory }}"
     state: directory
     mode: 02775
@@ -18,6 +18,7 @@
   ansible.builtin.template:
     src: systemd.service.j2
     dest: "/etc/systemd/system/{{ item.name }}.service"
+    mode: 0644
   notify:
     - Systemd reload
     - Systemd service restart
@@ -55,9 +56,10 @@
     - service
 
 - name: Systemd service restarter template
-  template:
+  ansible.builtin.template:
     src: systemd-restart.service.j2
     dest: "/etc/systemd/system/{{ item.name }}-restart.service"
+    mode: 0644
   notify:
     - Systemd reload
     - Systemd restarter service restart
@@ -89,9 +91,10 @@
     - restarter
 
 - name: Systemd path restarter template
-  template:
+  ansible.builtin.template:
     src: systemd-restart.path.j2
     dest: "/etc/systemd/system/{{ item.name }}-restart.path"
+    mode: 0644
   notify:
     - Systemd reload
     - Systemd restarter path restart
@@ -137,7 +140,7 @@
     - service
 
 - name: Clean service file
-  file:
+  ansible.builtin.file:
     path: "/etc/systemd/system/{{ item.name }}.service"
     state: absent
   notify: Systemd reload
@@ -151,7 +154,7 @@
     - deletion
 
 - name: Clean restart service file
-  file:
+  ansible.builtin.file:
     dest: "/etc/systemd/system/{{ item.name }}-restart.service"
     state: absent
   notify: Systemd reload
@@ -167,7 +170,7 @@
     - deletion
 
 - name: Clean restart path file
-  file:
+  ansible.builtin.file:
     dest: "/etc/systemd/system/{{ item.name }}-restart.path"
     state: absent
   notify: Systemd reload
