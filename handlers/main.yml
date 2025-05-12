@@ -6,24 +6,21 @@
 
 - name: Systemd service restart
   ansible.builtin.service:
-    name: "{{ item.name }}"
+    name: "{{ item.item.name }}"
     state: restarted
-  loop: "{{ systemd_services }}"
+  loop: "{{ s.results }}"
+  when: item.changed
 
 - name: Systemd restarter service restart
   ansible.builtin.service:
-    name: "{{ item.name }}-restart"
+    name: "{{ item.item.name }}-restart"
     state: restarted
-  loop: "{{ systemd_services }}"
-  when:
-    - item.restarter is defined
-    - item.restarter
+  loop: "{{ r.results }}"
+  when: item.changed
 
 - name: Systemd restarter path restart
   ansible.builtin.service:
-    name: "{{ item.name }}-restart.path"
+    name: "{{ item.item.name }}-restart.path"
     state: restarted
-  loop: "{{ systemd_services }}"
-  when:
-    - item.restarter is defined
-    - item.restarter
+  loop: "{{ p.results }}"
+  when: item.changed
