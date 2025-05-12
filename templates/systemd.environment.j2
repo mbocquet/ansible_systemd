@@ -1,0 +1,5 @@
+# Ansible managed. role: {{ role_name }}. template: systemd.environment.j2
+
+{% for env in item.environmentfile %}
+{{ env }}
+{% endfor %}
