@@ -1,4 +1,4 @@
-# {{ ansible_managed }}. role: {{ role_name }}. template: systemd.service.j2
+# Ansible managed. role: {{ role_name }}. template: systemd.service.j2
 
 [Unit]
 Description={{ item.name }}
@@ -13,7 +13,7 @@ WorkingDirectory={{ item.working_directory }}
 
 # StandardOutput= /home/myuser/myappdir/logs/myapp.out.log
 # StandardError= /home/myuser/myappdir/logs/myapp.err.log
-# SyslogIdentifier=myapp
+# SyslogIdentifier={{ item.name }}
 User={{ item.user | default('root') }}
 Group={{ item.group | default('root') }}
 
@@ -21,6 +21,8 @@ Group={{ item.group | default('root') }}
 {% for env in item.environment %}
 Environment={{ env }}
 {% endfor %}
+{% elif item.environmentfile is defined %}
+EnvironmentFile=/etc/systemd/system/{{ item.name }}.environment
 {% endif %}
 
 [Install]
