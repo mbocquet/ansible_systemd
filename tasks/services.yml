@@ -9,7 +9,7 @@
   loop: "{{ systemd_services }}"
   when:
     - item.working_directory is defined
-    - item.available
+    - item.available is undefined or item.available
   tags:
     - systemd
     - workingdirectory
@@ -31,26 +31,47 @@
     - service
     - template
 
-- name: Systemd service template
+- name: Systemd service stat
   ansible.builtin.stat:
     path: "/etc/systemd/system/{{ item.name }}.service"
   loop: "{{ systemd_services }}"
+  register: s
   when:
     item.available is undefined or
     item.available
   tags:
     - systemd
     - service
+    - template
+    - stat
 
-- name: Systemd service
-  ansible.builtin.systemd:
-    name: "{{ item.name }}"
-    enabled: "{{ item.enabled | default(true) }}"
-    state: "{{ item.state | default('started') }}"
-    daemon_reload: true
+- name: Systemd service environmentfile template
+  ansible.builtin.template:
+    src: systemd.environment.j2
+    dest: "/etc/systemd/system/{{ item.name }}.environment"
+    mode: 0600
+  notify:
+    - Systemd reload
+    - Systemd service restart
   loop: "{{ systemd_services }}"
   when:
     - item.available is undefined or item.available
+    - item.environmentfile is defined
+  tags:
+    - systemd
+    - service
+    - template
+
+- name: Systemd service
+  ansible.builtin.systemd:
+    name: "{{ item.item.name }}"
+    enabled: "{{ item.item.enabled | default(true) }}"
+    state: "{{ item.item.state | default('started') }}"
+    daemon_reload: true
+  loop: "{{ s.results }}"
+  when:
+    - item.stat.exists
+    - item.item.available is undefined or item.item.available
   tags:
     - systemd
     - service
@@ -74,17 +95,31 @@
     - template
     - restarter
 
+- name: Systemd service restarter stat
+  ansible.builtin.stat:
+    path: "/etc/systemd/system/{{ item.name }}-restart.service"
+  loop: "{{ systemd_services }}"
+  register: r
+  when:
+    item.available is undefined or
+    item.available
+  tags:
+    - systemd
+    - service
+    - template
+    - stat
+
 - name: Systemd restarter service
   ansible.builtin.systemd:
-    name: "{{ item.name }}-restart"
-    enabled: "{{ item.enabled | default(true) }}"
-    state: "{{ item.state | default('started') }}"
+    name: "{{ item.item.name }}-restart"
+    enabled: "{{ item.item.enabled | default(true) }}"
+    state: "{{ item.item.state | default('started') }}"
     daemon_reload: true
-  loop: "{{ systemd_services }}"
+  loop: "{{ r.results }}"
   when:
-    - item.available is undefined or item.available
-    - item.restarter is defined
-    - item.restarter is true
+    - item.changed
+    - item.stat.exists
+    - item.item.available is undefined or item.item.available
   tags:
     - systemd
     - service
@@ -109,17 +144,31 @@
     - template
     - restarter
 
+- name: Systemd path restarter stat
+  ansible.builtin.stat:
+    path: "/etc/systemd/system/{{ item.name }}-restart.path"
+  loop: "{{ systemd_services }}"
+  register: p
+  when:
+    item.available is undefined or
+    item.available
+  tags:
+    - systemd
+    - path
+    - template
+    - stat
+
 - name: Systemd path
   ansible.builtin.systemd:
-    name: "{{ item.name }}-restart.path"
-    enabled: "{{ item.enabled | default(true) }}"
-    state: "{{ item.state | default('started') }}"
+    name: "{{ item.item.name }}-restart.path"
+    enabled: "{{ item.item.enabled | default(true) }}"
+    state: "{{ item.item.state | default('started') }}"
     daemon_reload: true
-  loop: "{{ systemd_services }}"
+  loop: "{{ p.results }}"
   when:
-    - item.available is undefined or item.available
-    - item.restarter is defined
-    - item.restarter
+    - item.item.available is undefined or item.item.available
+    - item.item.restarter is defined
+    - item.item.restarter
   tags:
     - systemd
     - service
@@ -142,6 +191,20 @@
 - name: Clean service file
   ansible.builtin.file:
     path: "/etc/systemd/system/{{ item.name }}.service"
+    state: absent
+  notify: Systemd reload
+  loop: "{{ systemd_services }}"
+  when:
+    - item.available is defined
+    - not item.available
+  tags:
+    - systemd
+    - service
+    - deletion
+
+- name: Clean environment file
+  ansible.builtin.file:
+    path: "/etc/systemd/system/{{ item.name }}.environnment"
     state: absent
   notify: Systemd reload
   loop: "{{ systemd_services }}"
