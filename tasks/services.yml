@@ -70,7 +70,6 @@
     daemon_reload: true
   loop: "{{ s.results }}"
   when:
-    - item.stat.exists
     - item.item.available is undefined or item.item.available
   tags:
     - systemd
