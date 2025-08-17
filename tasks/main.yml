@@ -1,6 +1,6 @@
 ---
 # tasks file for systemd
-- name: fake ansible managed line
+- name: Fake ansible managed line
   ansible.builtin.lineinfile:
     path: /etc/systemd/system.conf.d/local.conf
     insertbefore: BOF
@@ -14,7 +14,7 @@
     - config
     - conf.d
 
-- name: system.conf.d/local.conf
+- name: Systemd local.conf
   community.general.ini_file:
     mode: 0664
     owner: root
@@ -32,7 +32,7 @@
     - config
     - conf.d
 
-- name: masked units
+- name: Masked units
   ansible.builtin.systemd:
     name: "{{ item.name }}"
     masked: "{{ item.masked }}"
