@@ -176,8 +176,8 @@
 - name: Systemd service
   ansible.builtin.systemd:
     name: "{{ item.name }}"
-    enabled: "{{ item.enabled }}"
-    state: "{{ item.state }}"
+    enabled: "{{ item.enabled | default(false) }}"
+    state: "{{ item.state | default(omit) }}"
     daemon_reload: true
   loop: "{{ systemd_services }}"
   when:
