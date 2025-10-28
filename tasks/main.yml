@@ -16,7 +16,7 @@
 
 - name: Systemd local.conf
   community.general.ini_file:
-    mode: 0664
+    mode: "0664"
     owner: root
     group: root
     no_extra_spaces: true
