@@ -4,7 +4,7 @@
   ansible.builtin.lineinfile:
     path: /etc/systemd/system.conf.d/local.conf
     insertbefore: BOF
-    regexp: '^# Ansible managed'
+    regexp: ^# Ansible managed
     line: "# Ansible managed. role: {{ role_name }}."
     state: present
   when:
