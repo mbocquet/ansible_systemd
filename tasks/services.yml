@@ -17,7 +17,7 @@
 - name: Systemd service template
   ansible.builtin.template:
     src: systemd.service.j2
-    dest: "/etc/systemd/system/{{ item.name }}.service"
+    dest: /etc/systemd/system/{{ item.name }}.service
     mode: "0644"
   notify:
     - Systemd reload
@@ -33,7 +33,7 @@
 
 - name: Systemd service stat
   ansible.builtin.stat:
-    path: "/etc/systemd/system/{{ item.name }}.service"
+    path: /etc/systemd/system/{{ item.name }}.service
   loop: "{{ systemd_services }}"
   register: s
   when:
@@ -48,7 +48,7 @@
 - name: Systemd service environmentfile template
   ansible.builtin.template:
     src: systemd.environment.j2
-    dest: "/etc/systemd/system/{{ item.name }}.environment"
+    dest: /etc/systemd/system/{{ item.name }}.environment
     mode: "0600"
   notify:
     - Systemd reload
@@ -78,7 +78,7 @@
 - name: Systemd service restarter template
   ansible.builtin.template:
     src: systemd-restart.service.j2
-    dest: "/etc/systemd/system/{{ item.name }}-restart.service"
+    dest: /etc/systemd/system/{{ item.name }}-restart.service
     mode: "0644"
   notify:
     - Systemd reload
@@ -96,7 +96,7 @@
 
 - name: Systemd service restarter stat
   ansible.builtin.stat:
-    path: "/etc/systemd/system/{{ item.name }}-restart.service"
+    path: /etc/systemd/system/{{ item.name }}-restart.service
   loop: "{{ systemd_services }}"
   register: r
   when:
@@ -127,7 +127,7 @@
 - name: Systemd path restarter template
   ansible.builtin.template:
     src: systemd-restart.path.j2
-    dest: "/etc/systemd/system/{{ item.name }}-restart.path"
+    dest: /etc/systemd/system/{{ item.name }}-restart.path
     mode: "0644"
   notify:
     - Systemd reload
@@ -145,7 +145,7 @@
 
 - name: Systemd path restarter stat
   ansible.builtin.stat:
-    path: "/etc/systemd/system/{{ item.name }}-restart.path"
+    path: /etc/systemd/system/{{ item.name }}-restart.path
   loop: "{{ systemd_services }}"
   register: p
   when:
@@ -189,7 +189,7 @@
 
 - name: Clean service file
   ansible.builtin.file:
-    path: "/etc/systemd/system/{{ item.name }}.service"
+    path: /etc/systemd/system/{{ item.name }}.service
     state: absent
   notify: Systemd reload
   loop: "{{ systemd_services }}"
@@ -203,7 +203,7 @@
 
 - name: Clean environment file
   ansible.builtin.file:
-    path: "/etc/systemd/system/{{ item.name }}.environnment"
+    path: /etc/systemd/system/{{ item.name }}.environnment
     state: absent
   notify: Systemd reload
   loop: "{{ systemd_services }}"
@@ -217,7 +217,7 @@
 
 - name: Clean restart service file
   ansible.builtin.file:
-    dest: "/etc/systemd/system/{{ item.name }}-restart.service"
+    dest: /etc/systemd/system/{{ item.name }}-restart.service
     state: absent
   notify: Systemd reload
   loop: "{{ systemd_services }}"
@@ -233,7 +233,7 @@
 
 - name: Clean restart path file
   ansible.builtin.file:
-    dest: "/etc/systemd/system/{{ item.name }}-restart.path"
+    dest: /etc/systemd/system/{{ item.name }}-restart.path
     state: absent
   notify: Systemd reload
   loop: "{{ systemd_services }}"
