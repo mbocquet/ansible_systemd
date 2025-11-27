@@ -71,6 +71,7 @@
   loop: "{{ s.results }}"
   when:
     - item.item.available is undefined or item.item.available
+    - item.stat.exists
   tags:
     - systemd
     - service
@@ -166,6 +167,7 @@
   loop: "{{ p.results }}"
   when:
     - item.item.available is undefined or item.item.available
+    - item.stat.exists
     - item.item.restarter is defined
     - item.item.restarter
   tags:
