@@ -6,6 +6,9 @@ After={{ item.name }}.service
 
 [Service]
 Type=oneshot
+{% if item.restarter_execstartpre is defined and item.restarter_execstartpre | length %}
+ExecStartPre={{ item.restarter_execstartpre }}
+{% endif %}
 ExecStart=/bin/systemctl restart {{ item.name }}.service
 
 [Install]
