@@ -4,7 +4,7 @@
     path: "{{ item.working_directory }}"
     state: directory
     mode: "02775"
-    owner: "{{ item.user | default(omit) }}"
+    owner: "{{ item.owner | default(omit) }}"
     group: "{{ item.group | default(omit) }}"
   loop: "{{ systemd_services }}"
   when:
